@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>My Links</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <main class="container">
+      <nav class="top-nav">
+        <a href="/about">About</a>
+      </nav>
+      <h1>My Links</h1>
+
+      <form action="/add" method="post">
+        <div class="form-group">
+          <label for="site_name">Site Name</label>
+          <input id="site_name" name="site_name" type="text" required>
+        </div>
+        <div class="form-group">
+          <label for="site_url">URL</label>
+          <input id="site_url" name="site_url" type="url" required>
+        </div>
+        <button type="submit">Add Link</button>
+      </form>
+
+      <ul>
+        {% for link in links %}
+        <li class="link-card"><a href="{{ link.url }}">{{ link.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </main>
+  </body>
+</html>
