@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>My Links</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <main class="container">
+      <nav class="top-nav">
+        <a href="/about">About</a>
+      </nav>
+      <h1>My Links</h1>
+
+      <form action="/add" method="post">
+        <div class="form-group">
+          <label for="site_name">Site Name</label>
+          <input id="site_name" name="site_name" type="text" required>
+        </div>
+        <div class="form-group">
+          <label for="site_url">URL</label>
+          <input id="site_url" name="site_url" type="url" required>
+        </div>
+        <button class="add-btn" type="submit">Add Link</button>
+      </form>
+
+      <ul>
+        {% for link in links %}
+          <li class="link-card rich-card">
+            <div class="link-main">
+              {% if link.image_url != 'Not Available' %}
+                <img class="card-image" src="{{ link.image_url }}" alt="{{ link.name }} preview image">
+              {% else %}
+                <div class="card-placeholder">Image: Not Available</div>
+              {% endif %}
+
+              {% if link.title != 'Not Available' %}
+                <div class="card-title">{{ link.title }}</div>
+              {% else %}
+                <div class="card-title">Title: Not Available</div>
+              {% endif %}
+
+              {% if link.description != 'Not Available' %}
+                <div class="card-description">{{ link.description }}</div>
+              {% else %}
+                <div class="card-description">Description: Not Available</div>
+              {% endif %}
+
+              <a class="card-url" href="{{ link.url }}">{{ link.url }}</a>
+            </div>
+
+            <div class="card-actions">
+              <a class="edit-link" href="{{ url_for('edit_link', link_index=loop.index0) }}">Edit</a>
+              <form action="{{ url_for('delete_link', link_index=loop.index0) }}" method="post">
+                <button class="delete-btn" type="submit">Delete</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </main>
+  </body>
+</html>
