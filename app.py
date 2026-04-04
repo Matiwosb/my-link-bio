@@ -49,6 +49,22 @@ def delete_link(link_index):
         links.pop(link_index)
 
     return redirect(url_for("home"))
+# <<<<<<< codex/create-route-for-my-links-page-182tpe
+# =======
+# from flask import Flask, render_template
+
+# app = Flask(__name__)
+
+
+# @app.route("/")
+# def home():
+#     links = [
+#         {"name": "GitHub", "url": "https://github.com"},
+#         {"name": "LinkedIn", "url": "https://www.linkedin.com"},
+#         {"name": "Personal Blog", "url": "https://example.com"},
+#     ]
+#     return render_template("index.html", links=links)
+# >>>>>>> main
 
 
 @app.route("/about")
