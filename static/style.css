@@ -103,3 +103,46 @@ ul {
 .link-card a:hover {
   color: var(--primary);
 }
+
+
+.add-btn {
+  width: 100%;
+}
+
+.link-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.delete-btn {
+  width: auto;
+  padding: 8px 12px;
+  background: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-link {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #0ea5e9;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.edit-link:hover {
+  background: #0284c7;
+}
