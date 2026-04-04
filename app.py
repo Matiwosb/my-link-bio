@@ -1,12 +1,68 @@
 from flask import Flask, redirect, render_template, request, url_for
+import requests
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
+
+# Shared fallback text for missing page metadata.
+NOT_AVAILABLE = "Not Available"
+
+
+def extract_link_metadata(site_url):
+    """Fetch a URL and extract Open Graph title/description/image metadata."""
+    metadata = {
+        "title": NOT_AVAILABLE,
+        "description": NOT_AVAILABLE,
+        "image_url": NOT_AVAILABLE,
+    }
+
+    try:
+        response = requests.get(site_url, timeout=8)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Pull Open Graph values and keep defaults if tags are missing.
+        og_title = soup.find("meta", property="og:title")
+        og_description = soup.find("meta", property="og:description")
+        og_image = soup.find("meta", property="og:image")
+
+        if og_title and og_title.get("content"):
+            metadata["title"] = og_title["content"].strip()
+        if og_description and og_description.get("content"):
+            metadata["description"] = og_description["content"].strip()
+        if og_image and og_image.get("content"):
+            metadata["image_url"] = og_image["content"].strip()
+    except requests.RequestException:
+        # Keep fallback metadata values when fetch fails.
+        pass
+
+    return metadata
+
+
 # In-memory storage for links submitted through the homepage form.
 links = [
-    {"name": "GitHub", "url": "https://github.com"},
-    {"name": "LinkedIn", "url": "https://www.linkedin.com"},
-    {"name": "Personal Blog", "url": "https://example.com"},
+    {
+        "name": "GitHub",
+        "url": "https://github.com",
+        "title": NOT_AVAILABLE,
+        "description": NOT_AVAILABLE,
+        "image_url": NOT_AVAILABLE,
+    },
+    {
+        "name": "LinkedIn",
+        "url": "https://www.linkedin.com",
+        "title": NOT_AVAILABLE,
+        "description": NOT_AVAILABLE,
+        "image_url": NOT_AVAILABLE,
+    },
+    {
+        "name": "Personal Blog",
+        "url": "https://example.com",
+        "title": NOT_AVAILABLE,
+        "description": NOT_AVAILABLE,
+        "image_url": NOT_AVAILABLE,
+    },
 ]
 
 
@@ -21,7 +77,16 @@ def add_link():
     site_url = request.form.get("site_url", "").strip()
 
     if site_name and site_url:
-        links.append({"name": site_name, "url": site_url})
+        metadata = extract_link_metadata(site_url)
+        links.append(
+            {
+                "name": site_name,
+                "url": site_url,
+                "title": metadata["title"],
+                "description": metadata["description"],
+                "image_url": metadata["image_url"],
+            }
+        )
 
     return redirect(url_for("home"))
 
@@ -36,7 +101,14 @@ def edit_link(link_index):
         site_url = request.form.get("site_url", "").strip()
 
         if site_name and site_url:
-            links[link_index] = {"name": site_name, "url": site_url}
+            metadata = extract_link_metadata(site_url)
+            links[link_index] = {
+                "name": site_name,
+                "url": site_url,
+                "title": metadata["title"],
+                "description": metadata["description"],
+                "image_url": metadata["image_url"],
+            }
 
         return redirect(url_for("home"))
 
@@ -49,22 +121,6 @@ def delete_link(link_index):
         links.pop(link_index)
 
     return redirect(url_for("home"))
-# <<<<<<< codex/create-route-for-my-links-page-182tpe
-# =======
-# from flask import Flask, render_template
-
-# app = Flask(__name__)
-
-
-# @app.route("/")
-# def home():
-#     links = [
-#         {"name": "GitHub", "url": "https://github.com"},
-#         {"name": "LinkedIn", "url": "https://www.linkedin.com"},
-#         {"name": "Personal Blog", "url": "https://example.com"},
-#     ]
-#     return render_template("index.html", links=links)
-# >>>>>>> main
 
 
 @app.route("/about")
